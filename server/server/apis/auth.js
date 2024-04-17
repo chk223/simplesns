@@ -2,11 +2,6 @@ const db = require('../dbconfig/db')
 const connection = db.promise()
 const express = require('express')
 const router = express.Router()
-function createuuid() {
-    const {v4: uuidv4} = require('uuid')
-    const tokens = uuidv4().split('-')
-    return tokens[2] + tokens[1] + tokens[0] + tokens[3] + tokens[4]
-}
 router.post('/regist', async(req, res) => {
     const {id, pw, nick} = req.body
     try{
@@ -15,9 +10,8 @@ router.post('/regist', async(req, res) => {
         const [rows, fields] = await connection.execute(query, param)
         if(rows[0].dup ==0){
             try {
-                uuid = createuuid()
-                query = 'insert into user (uuid,id, pw,nickname) values (?,?,?,?)'
-                param = [uuid, id, pw, nick]
+                query = 'insert into user (id, pw,nickname) values (?,?,?,?)'
+                param = [id, pw, nick]
                 const [rows, fields] = await connection.execute(query, param)
                 res.status(200).json({msg: '회원가입 완료!'})
             } catch (err) {

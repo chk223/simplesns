@@ -15,9 +15,20 @@ router.get('/userpost', async (req, res) => {
     const {user_code} = req.body
     const param = [user_code]
     try {
-        const query = 'select * from post where owner = ?;';
+        const query = 'select * from post where owner = ?';
         const [rows, fields] = await connection.execute(query, param);
         res.status(200).json({ msg: rows });
+    } catch (err) {
+        res.status(401).json({ msg: err });
+    }
+})
+router.get('/likedpost', async (req, res) => {
+    const {post_num} = req.body
+    const param = [post_num]
+    try {
+        const query = 'update post set liked = liked+1 where post_num = ?';
+        const [rows, fields] = await connection.execute(query, param);
+        res.status(200).json({ msg: '좋아요+1' });
     } catch (err) {
         res.status(401).json({ msg: err });
     }
@@ -26,8 +37,9 @@ router.get('/userpost', async (req, res) => {
 router.post('/posting', async( req, res) => {
     const {owner, text} = req.body
     try {
-        const query = 'insert into post (owner,text) values (?,?)'
-        const param = [owner, text]
+        const query = 'insert into post (owner,text,date) values (?,?,?);'
+        const date = new Date().toISOString().slice(0,19).replace('T', ' ')
+        const param = [owner, text, date]
         const [rows, fields] = await connection.execute(query, param)
         res.status(200).json({msg: '포스팅 완료!'})
     } catch (err) {

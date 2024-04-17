@@ -5,12 +5,12 @@ const router = express.Router()
 router.post('/regist', async(req, res) => {
     const {id, pw, nick} = req.body
     try{
-        let query = 'select count(*)"dup" from user where user_id = ?'
+        let query = 'select count(*)"dup" from user where id = ?'
         let param = [id]
         const [rows, fields] = await connection.execute(query, param)
         if(rows[0].dup ==0){
             try {
-                query = 'insert into user (id, pw,nickname) values (?,?,?,?)'
+                query = 'insert into user (id, pw,nickname) values (?,?,?)'
                 param = [id, pw, nick]
                 const [rows, fields] = await connection.execute(query, param)
                 res.status(200).json({msg: '회원가입 완료!'})
